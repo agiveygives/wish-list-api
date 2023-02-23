@@ -1,0 +1,219 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "version": "0.1.0",
+    "title": "Drop WishList API",
+    "description": "Create a wishList or but gifts for a friend"
+  },
+  "paths": {
+    "/account": {
+      "parameters": [],
+      "post": {
+        "summary": "Create a new account",
+        "tags": [
+          "Account"
+        ],
+        "requestBody": {
+          "content": {}
+        },
+        "responses": {
+          "201": {
+            "description": "Created a new account",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/account/login": {
+      "parameters": [],
+      "post": {
+        "summary": "Login to an account",
+        "tags": [
+          "Account"
+        ],
+        "requestBody": {
+          "content": {}
+        },
+        "responses": {
+          "200": {
+            "description": "Logged into an account",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["expiresAt"],
+                  "properties": {
+                    "expiresAt": {
+                      "description": "The UTC DateTime string for when the Auth token will expire.",
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/wish-list/{wishListId}": {
+      "parameters": [
+        {
+          "name": "wishListId",
+          "description": "The unique identifier of the Wish List",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "$ref": "#/components/schemas/WishListId"
+          }
+        }
+      ],
+      "get": {
+        "summary": "Read a wish List",
+        "tags": [
+          "Wish List"
+        ],
+        "responses": {
+          "200": {
+            "description": "The wish List corresponding to the provided `wishListId`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WishList"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No wish List found for the provided `wishListId`",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Unexpected error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Update a Wish List",
+        "tags": [
+          "Wish List"
+        ],
+        "requestBody": {
+          "content": {}
+        },
+        "responses": {
+          "200": {
+            "description": "Updated a Wish List",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["id", "title", "startDateTime"],
+                  "properties": {
+                    "id": {
+                      "description": "The uuid of the Wish List.",
+                      "type": "string",
+                      "nullable": false
+                    },
+                    "title": {
+                      "description": "The title of the Wish List.",
+                      "type": "string",
+                      "nullable": false
+                    },
+                    "description": {
+                      "description": "The description of the Wish List.",
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "startDateTime": {
+                      "description": "The UTC DateTime string for when the Wish List starts or started.",
+                      "type": "string",
+                      "nullable": false
+                    },
+                    "endDateTime": {
+                      "description": "The UTC DateTime string for when the Wish List ends or ended.",
+                      "type": "string",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "WishListId": {
+        "description": "The unique identifier of a wishList",
+        "type": "string"
+      },
+      "WishList": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "type"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/WishListId"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "wedding",
+              "birthday",
+              "holiday",
+              "justbecause"
+            ]
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "properties": {
+          "message": {
+            "description": "A human readable error message",
+            "type": "string"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "ApiKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Api-Key"
+      }
+    }
+  },
+  "security": [
+    {
+      "ApiKey": []
+    }
+  ]
+}

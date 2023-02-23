@@ -1,0 +1,34 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:15
+    restart: always
+    volumes:
+      - './temp/db:/var/lib/postgresql/data'
+      - './db:/var/lib/postgresql/api/db'
+    environment:
+      POSTGRES_PASSWORD: password
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 30s
+      retries: 5
+
+  api:
+    tty: true
+    stdin_open: true
+    build:
+      context: ./
+    env_file:
+      - ./.env
+      - ./.env.development
+      - ./.env.development.local
+    volumes:
+      - './api:/api'
+    ports:
+      - '8000:8000'
+    depends_on:
+      db:
+        condition: service_healthy
+
